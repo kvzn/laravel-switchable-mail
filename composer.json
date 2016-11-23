@@ -1,0 +1,30 @@
+{
+    "name": "kevinzheng/laravel-switchable-mail",
+    "description": "For Laravel to support multiple and switchable on runtime mail drivers.",
+    "homepage": "https://github.com/kevinzheng/laravel-switchable-mail",
+    "support": {
+        "issues": "https://github.com/kevinzheng/laravel-switchable-mail/issues",
+        "source": "https://github.com/kevinzheng/laravel-switchable-mail"
+    },
+    "require": {
+        "php": ">=5.6.4",
+        "illuminate/container": "5.3.*",
+        "illuminate/contracts": "5.3.*",
+        "illuminate/support": "5.3.*",
+        "psr/log": "~1.0",
+        "swiftmailer/swiftmailer": "~5.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Zheng",
+            "email": "realkvz@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "KVZ\\Laravel\\SwitchableMail\\": "src/"
+        }
+    }
+}
