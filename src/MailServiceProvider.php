@@ -2,6 +2,8 @@
 
 namespace KVZ\Laravel\SwitchableMail;
 
+use Illuminate\Mail\TransportManager;
+
 class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
 {
     /**
@@ -23,8 +25,14 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
      */
     public function register()
     {
+        $this->registerSwiftTransport();
+        $this->registerSwiftMailerManager();
         $this->registerSwiftMailer();
+        $this->registerMailer();
+    }
 
+    public function registerMailer()
+    {
         $this->app->singleton('mailer', function ($app) {
             // Once we have create the mailer instance, we will set a container instance
             // on the mailer. This allows us to resolve mailer classes via containers
@@ -52,5 +60,62 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
 
             return $mailer;
         });
+    }
+
+    /**
+     * Set a few dependencies on the mailer instance.
+     *
+     * @param  \Illuminate\Mail\Mailer  $mailer
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    protected function setMailerDependencies($mailer, $app)
+    {
+        $mailer->setContainer($app);
+
+        if ($app->bound('queue')) {
+            $mailer->setQueue($app['queue']);
+        }
+    }
+
+    public function registerSwiftMailerManager()
+    {
+        $this->app['swift.mailerManager'] = $this->app->share(function ($app) {
+            return new SwiftMailerManager($app);
+        });
+    }
+
+    /**
+     * Register the Swift Mailer instance.
+     *
+     * @return void
+     */
+    public function registerSwiftMailer()
+    {
+        $this->app['swift.mailer'] = $this->app->share(function ($app) {
+            return $app['swift.mailerManager']->getDefaultSwiftMailer();
+        });
+    }
+
+    /**
+     * Register the Swift Transport instance.
+     *
+     * @return void
+     */
+    protected function registerSwiftTransport()
+    {
+        $this->app['swift.transport'] = $this->app->share(function ($app) {
+            return new TransportManager($app);
+        });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['mailer', 'swift.mailerManager', 'swift.transport'];
     }
 }

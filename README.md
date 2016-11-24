@@ -35,3 +35,6 @@ Modify if you need:
 ## Usage
 
 Nothing to do, just use Laravel Mail as usual.
+
+## Thanks to
+[ElfSundae](https://github.com/ElfSundae)
