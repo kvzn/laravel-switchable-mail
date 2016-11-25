@@ -106,9 +106,9 @@ class SwiftMailerManager extends Manager
     {
         return array_keys(array_merge(
             (array) $message->getTo(),
+            (array) $message->getReplyTo(),
             (array) $message->getCc(),
-            (array) $message->getBcc(),
-            (array) $message->getReplyTo()
+            (array) $message->getBcc()
         ));
     }
 
