@@ -14,15 +14,17 @@ class MailDriver
      */
     public static function forMessage(Swift_Message $message)
     {
-        $recipientsDomains = static::getMessageRecipientsDomains($message);
+        if ($multiDrivers = config('switchable-mail', [])) {
+            $recipientsDomains = static::getMessageRecipientsDomains($message);
 
-        return key(array_filter(
-            config('switchable-mail', []),
-            function ($value) use ($recipientsDomains) {
-                return count(array_intersect($value, $recipientsDomains)) > 0;
-            },
-            ARRAY_FILTER_USE_BOTH
-        ));
+            return key(array_filter(
+                $multiDrivers,
+                function ($value) use ($recipientsDomains) {
+                    return count(array_intersect($value, $recipientsDomains)) > 0;
+                },
+                ARRAY_FILTER_USE_BOTH
+            ));
+        }
     }
 
     /**
