@@ -49,7 +49,7 @@ class Mailer extends BaseMailer
 
         try {
             return $this->swiftManager
-                ->mailerForMessage($message)
+                ->mailer(MailDriver::forMessage($message))
                 ->send($message, $this->failedRecipients);
         } finally {
             $this->forceReconnection();

@@ -5,7 +5,6 @@ namespace KVZ\Laravel\SwitchableMail;
 use Illuminate\Mail\TransportManager;
 use Illuminate\Support\Manager;
 use Swift_Mailer;
-use Swift_Message;
 
 class SwiftMailerManager extends Manager
 {
@@ -48,68 +47,6 @@ class SwiftMailerManager extends Manager
     public function mailer($driver = null)
     {
         return $this->driver($driver);
-    }
-
-    /**
-     * Get a swift mailer instance for the given message.
-     *
-     * @param  \Swift_Message  $message
-     * @return \Swift_Mailer
-     */
-    public function mailerForMessage(Swift_Message $message)
-    {
-        return $this->mailer($this->determineMailDriver($message));
-    }
-
-    /**
-     * Determine mail driver for the given message.
-     *
-     * @param  \Swift_Message  $message
-     * @return string|null
-     */
-    protected function determineMailDriver(Swift_Message $message)
-    {
-        $recipientsDomains = $this->getMessageRecipientsDomains($message);
-
-        return key(array_filter(
-            $this->app['config']['switchable-mail'],
-            function ($value) use ($recipientsDomains) {
-                return count(array_intersect($value, $recipientsDomains)) > 0;
-            },
-            ARRAY_FILTER_USE_BOTH
-        ));
-    }
-
-    /**
-     * Get domains for the recipients of message.
-     *
-     * @param  \Swift_Message  $message
-     * @return array
-     */
-    protected function getMessageRecipientsDomains($message)
-    {
-        return array_values(array_unique(array_map(
-            function ($address) {
-                return strtolower(last(explode('@', $address)));
-            },
-            $this->getMessageRecipients($message)
-        )));
-    }
-
-    /**
-     * Get recipients for the given message.
-     *
-     * @param  \Swift_Message  $message
-     * @return array
-     */
-    protected function getMessageRecipients($message)
-    {
-        return array_keys(array_merge(
-            (array) $message->getTo(),
-            (array) $message->getReplyTo(),
-            (array) $message->getCc(),
-            (array) $message->getBcc()
-        ));
     }
 
     /**
