@@ -20,6 +20,10 @@
         {
             "name": "Kevin Zheng",
             "email": "realkvz@gmail.com"
+        },
+        {
+            "name": "Elf Sundae",
+            "email": "elf.sundae@gmail.com"
         }
     ],
     "minimum-stability": "dev",

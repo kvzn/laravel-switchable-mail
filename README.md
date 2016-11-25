@@ -19,10 +19,13 @@ For Laravel to support multiple and switchable on runtime mail drivers.
 ## Configuration
 
 ```php
-'default_driver' => env('MAIL_DRIVER', 'smtp'),
-'drivers_division' => [
-    //'directmail' => ['qq.com', '163.com', '126.com', 'sina.com', 'sina.com.cn', 'sohu.com'],
-],
+// 'directmail' => [
+//     'qq.com', '163.com', '126.com', 'sina.com', 'sina.com.cn', 'sohu.com',
+// ],
+
+// 'mailgun' => [
+//     'example.com',
+// ],
 ```
 
 ## Usage
