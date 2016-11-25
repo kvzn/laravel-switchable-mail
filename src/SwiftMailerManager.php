@@ -60,6 +60,17 @@ class SwiftMailerManager extends Manager
     }
 
     /**
+     * Get the name of mail driver for the given swift mailer instance.
+     *
+     * @param  \Swift_Mailer  $mailer
+     * @return string|null
+     */
+    public function getDriverForMailer(Swift_Mailer $mailer)
+    {
+        return array_search($mailer, $this->drivers) ?: null;
+    }
+
+    /**
      * Create a new swift mailer instance.
      *
      * @param  string  $driver
