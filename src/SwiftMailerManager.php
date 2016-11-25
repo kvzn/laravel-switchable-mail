@@ -50,6 +50,16 @@ class SwiftMailerManager extends Manager
     }
 
     /**
+     * Get all of the created swift mailer instances.
+     *
+     * @return array
+     */
+    public function getMailers()
+    {
+        return $this->drivers;
+    }
+
+    /**
      * Create a new swift mailer instance.
      *
      * @param  string  $driver
