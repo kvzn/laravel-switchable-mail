@@ -4,14 +4,17 @@ For Laravel to support multiple and switchable on runtime mail drivers.
 ## Installation
 
 1. Install this package using the Composer manager:
-  ```sh
-  composer require kevinzheng/laravel-switchable-mail
-  ```
+
+    ```sh
+    composer require kevinzheng/laravel-switchable-mail
+    ```
+
 2. **Replace** `Illuminate\Mail\MailServiceProvider::class` with `KVZ\Laravel\SwitchableMail\MailServiceProvider::class` in the `config/app.php` file.
 3. Publish configuration file: 
-  ```sh
-  php artisan vendor:publish --tag=switchable-mail
-  ```
+
+    ```sh
+    php artisan vendor:publish --tag=switchable-mail
+    ```
 
 ## Configuration
 
