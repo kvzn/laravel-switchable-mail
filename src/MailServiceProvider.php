@@ -25,6 +25,8 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/switchable-mail.php', 'switchable-mail');
+
         $this->registerSwiftTransport();
         $this->registerSwiftMailerManager();
         $this->registerSwiftMailer();
