@@ -1,64 +1,82 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zkz
- * Date: 2016/11/24
- * Time: 13:30
- */
 
 namespace KVZ\Laravel\SwitchableMail;
 
-
+use Illuminate\Mail\TransportManager;
 use Illuminate\Support\Manager;
 use Swift_Mailer;
+use Swift_Message;
 
 class SwiftMailerManager extends Manager
 {
     /**
-     * The swift mailers needed in applicaiton.
+     * The mail transport manager.
      *
-     * @var array
+     * @var \Illuminate\Mail\TransportManager
      */
-    protected $swiftMailers = [];
+    protected $transportManager;
 
     /**
-     * Get the swift mailer by \Swift_Message.
+     * Get the mail transport manager.
      *
-     * @param \Swift_Message $message
-     * @return mixed
+     * @return \Illuminate\Mail\TransportManager
      */
-    public function getSwiftMailerForMessage(\Swift_Message $message)
+    public function getTransportManager()
+    {
+        return $this->transportManager;
+    }
+
+    /**
+     * Set the mail transport manager.
+     *
+     * @param  \Illuminate\Mail\TransportManager  $manager
+     * @return $this
+     */
+    public function setTransportManager(TransportManager $manager)
+    {
+        $this->transportManager = $manager;
+
+        return $this;
+    }
+
+    /**
+     * Get a swift mailer instance.
+     *
+     * @param  string|null  $driver
+     * @return \Swift_Mailer
+     */
+    public function mailer($driver = null)
+    {
+        return $this->driver($driver);
+    }
+
+    /**
+     * Get a swift mailer instance for the given message.
+     *
+     * @param  \Swift_Message  $message
+     * @return \Swift_Mailer
+     */
+    public function mailerForMessage(Swift_Message $message)
     {
         // $to variable of $message is an array, this implementation is rough and temporary.
         $to = $message->getTo();
         $address = array_keys($to)[0];
 
-        return $this->getSwiftMailerByDriverName($this->determineMailDriver($address));
-    }
+        $driver = $this->determineMailDriver($address);
 
-    /**
-     * Get the swift mailer by driver name.
-     *
-     * @param $mailDriverName
-     * @return mixed
-     */
-    protected function getSwiftMailerByDriverName($mailDriverName)
-    {
-        if (!array_key_exists($mailDriverName, $this->swiftMailers)) {
-            $this->swiftMailers[$mailDriverName] = new Swift_Mailer($this->app['swift.transport']->driver($mailDriverName));
-        }
-        return $this->swiftMailers[$mailDriverName];
+        return $this->mailer($driver);
     }
 
     /**
      * Determine mail driver from the service domain of mail-to-address.
      *
-     * @param $address
-     * @return string
+     * @param  string  $address
+     * @return string|null
      */
     protected function determineMailDriver($address)
     {
-        $divisionMap = config('switchable-mail.drivers_division');
+        $divisionMap = $this->app['config']['switchable-mail'];
+
         if (is_array($divisionMap) && isset($divisionMap)) {
             $mailServiceDomain = explode('@', $address)[1];
             foreach ($divisionMap as $key => $value) {
@@ -67,17 +85,17 @@ class SwiftMailerManager extends Manager
                 }
             }
         }
-        return $this->getDefaultDriver();
     }
 
     /**
-     * Get the default swift mailer.
+     * Create a new swift mailer instance.
      *
-     * @return mixed
+     * @param  string  $driver
+     * @return \Swift_Mailer
      */
-    public function getDefaultSwiftMailer()
+    protected function createDriver($driver)
     {
-        return $this->getSwiftMailerByDriverName($this->getDefaultDriver());
+        return new Swift_Mailer($this->transportManager->driver($driver));
     }
 
     /**
@@ -87,7 +105,6 @@ class SwiftMailerManager extends Manager
      */
     public function getDefaultDriver()
     {
-        $defaultDriver = config('switchable-mail.default_driver');
-        return $defaultDriver ? $defaultDriver : config('mail.driver');
+        return $this->transportManager->getDefaultDriver();
     }
 }

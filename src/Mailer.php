@@ -1,28 +1,45 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zkz
- * Date: 2016/11/23
- * Time: 13:52
- */
 
 namespace KVZ\Laravel\SwitchableMail;
 
 use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Mail\Mailer as BaseMailer;
 
-class Mailer extends \Illuminate\Mail\Mailer
+class Mailer extends BaseMailer
 {
+    /**
+     * The Swift Mailer Manager instance.
+     *
+     * @var \KVZ\Laravel\SwitchableMail\SwiftMailerManager
+     */
+    protected $swiftManager;
+
+    /**
+     * Set the Swift Mailer Manager instance.
+     *
+     * @param  \KVZ\Laravel\SwitchableMail\SwiftMailerManager  $manager
+     * @return void
+     */
+    public function setSwiftMailerManager($manager)
+    {
+        $this->swiftManager = $manager;
+    }
+
+    /**
+     * Send a Swift Message instance.
+     *
+     * @param  \Swift_Message  $message
+     * @return void
+     */
     protected function sendSwiftMessage($message)
     {
         if ($this->events) {
             $this->events->fire(new MessageSending($message));
         }
 
-        $swiftMailerManager = app('swift.mailerManager');
-
         try {
-            $swiftMailer = $swiftMailerManager->getSwiftMailerForMessage($message);
-            return $swiftMailer->send($message, $this->failedRecipients);
+            return $this->swiftManager->mailerForMessage($message)
+                ->send($message, $this->failedRecipients);
         } finally {
             $this->forceReconnection();
         }

@@ -2,12 +2,12 @@
 
 namespace KVZ\Laravel\SwitchableMail;
 
-use Illuminate\Mail\TransportManager;
+use Illuminate\Mail\MailServiceProvider as ServiceProvider;
 
-class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
+class MailServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap the application services.
+     * Bootstrap the service provider.
      *
      * @return void
      */
@@ -27,13 +27,32 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/switchable-mail.php', 'switchable-mail');
 
-        $this->registerSwiftTransport();
-        $this->registerSwiftMailerManager();
         $this->registerSwiftMailer();
+
+        $this->registerSwiftMailerManager();
+
         $this->registerMailer();
     }
 
-    public function registerMailer()
+    /**
+     * Register the swift mailer manager.
+     *
+     * @return void
+     */
+    protected function registerSwiftMailerManager()
+    {
+        $this->app->singleton('swift.mailerManager', function ($app) {
+            return (new SwiftMailerManager($app))
+                ->setTransportManager($app['swift.transport']);
+        });
+    }
+
+    /**
+     * Register the Mailer instance.
+     *
+     * @return void
+     */
+    protected function registerMailer()
     {
         $this->app->singleton('mailer', function ($app) {
             // Once we have create the mailer instance, we will set a container instance
@@ -67,48 +86,15 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
     /**
      * Set a few dependencies on the mailer instance.
      *
-     * @param  \Illuminate\Mail\Mailer  $mailer
+     * @param  \KVZ\Laravel\SwitchableMail\Mailer  $mailer
      * @param  \Illuminate\Foundation\Application  $app
      * @return void
      */
     protected function setMailerDependencies($mailer, $app)
     {
-        $mailer->setContainer($app);
+        parent::setMailerDependencies($mailer, $app);
 
-        if ($app->bound('queue')) {
-            $mailer->setQueue($app['queue']);
-        }
-    }
-
-    public function registerSwiftMailerManager()
-    {
-        $this->app['swift.mailerManager'] = $this->app->share(function ($app) {
-            return new SwiftMailerManager($app);
-        });
-    }
-
-    /**
-     * Register the Swift Mailer instance.
-     *
-     * @return void
-     */
-    public function registerSwiftMailer()
-    {
-        $this->app['swift.mailer'] = $this->app->share(function ($app) {
-            return $app['swift.mailerManager']->getDefaultSwiftMailer();
-        });
-    }
-
-    /**
-     * Register the Swift Transport instance.
-     *
-     * @return void
-     */
-    protected function registerSwiftTransport()
-    {
-        $this->app['swift.transport'] = $this->app->share(function ($app) {
-            return new TransportManager($app);
-        });
+        $mailer->setSwiftMailerManager($app['swift.mailerManager']);
     }
 
     /**
@@ -118,6 +104,6 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
      */
     public function provides()
     {
-        return ['mailer', 'swift.mailerManager', 'swift.transport'];
+        return parent::provides() + ['swift.mailerManager'];
     }
 }
