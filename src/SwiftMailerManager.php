@@ -16,6 +16,13 @@ class SwiftMailerManager extends Manager
     protected $transportManager;
 
     /**
+     * The default driver.
+     *
+     * @var string
+     */
+    protected $defaultDriver;
+
+    /**
      * Get the mail transport manager.
      *
      * @return \Illuminate\Mail\TransportManager
@@ -50,6 +57,27 @@ class SwiftMailerManager extends Manager
     }
 
     /**
+     * Get all of the created swift mailer instances.
+     *
+     * @return array
+     */
+    public function getMailers()
+    {
+        return $this->drivers;
+    }
+
+    /**
+     * Get the name of mail driver for the given swift mailer instance.
+     *
+     * @param  \Swift_Mailer  $mailer
+     * @return string|null
+     */
+    public function getDriverForMailer(Swift_Mailer $mailer)
+    {
+        return array_search($mailer, $this->drivers) ?: null;
+    }
+
+    /**
      * Create a new swift mailer instance.
      *
      * @param  string  $driver
@@ -67,6 +95,19 @@ class SwiftMailerManager extends Manager
      */
     public function getDefaultDriver()
     {
-        return $this->transportManager->getDefaultDriver();
+        return $this->defaultDriver ?: $this->transportManager->getDefaultDriver();
+    }
+
+    /**
+     * Set the default mail driver name.
+     *
+     * @param  string  $driver
+     * @return $this
+     */
+    public function setDefaultDriver($driver)
+    {
+        $this->defaultDriver = $driver;
+
+        return $this;
     }
 }

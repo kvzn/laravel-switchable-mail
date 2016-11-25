@@ -82,4 +82,20 @@ class Mailer extends BaseMailer
     {
         return $this->swiftManager->mailer();
     }
+
+    /**
+     * Set the Swift Mailer instance.
+     *
+     * @param  \Swift_Mailer  $swift
+     * @return void
+     */
+    public function setSwiftMailer($swift)
+    {
+        if ($driver = $this->swiftManager->getDriverForMailer($swift)) {
+            $this->swiftManager->setDefaultDriver($driver);
+        }
+
+        // Our $swift is managed by the SwiftMailerManager singleton,
+        // so just let $this->swift go.
+    }
 }
