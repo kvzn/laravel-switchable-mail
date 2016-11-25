@@ -15,6 +15,16 @@ class Mailer extends BaseMailer
     protected $swiftManager;
 
     /**
+     * Get the Swift Mailer Manager instance.
+     *
+     * @return \KVZ\Laravel\SwitchableMail\SwiftMailerManager
+     */
+    public function getSwiftMailerManager()
+    {
+        return $this->swiftManager;
+    }
+
+    /**
      * Set the Swift Mailer Manager instance.
      *
      * @param  \KVZ\Laravel\SwitchableMail\SwiftMailerManager  $manager
