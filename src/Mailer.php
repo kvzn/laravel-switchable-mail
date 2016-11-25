@@ -72,4 +72,14 @@ class Mailer extends BaseMailer
 
         $swiftMailer->getTransport()->stop();
     }
+
+    /**
+     * Get the Swift Mailer instance.
+     *
+     * @return \Swift_Mailer
+     */
+    public function getSwiftMailer()
+    {
+        return $this->swiftManager->mailer();
+    }
 }
