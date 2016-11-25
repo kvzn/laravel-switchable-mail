@@ -20,7 +20,7 @@ KVZ\Laravel\SwitchableMail\MailServiceProvider::class,
 Run in project path:
 
 ```
-php artisan vendor:publish
+php artisan vendor:publish --tag=switchable-mail
 ```
 
 Modify if you need:

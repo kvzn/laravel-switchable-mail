@@ -15,7 +15,7 @@ class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/switchable-mail.php' => config_path('switchable-mail.php'),
-        ]);
+        ], 'switchable-mail');
     }
 
     /**
