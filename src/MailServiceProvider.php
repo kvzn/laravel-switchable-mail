@@ -81,6 +81,8 @@ class MailServiceProvider extends ServiceProvider
 
             return $mailer;
         });
+
+        $this->app->alias('mailer', Mailer::class);
     }
 
     /**
