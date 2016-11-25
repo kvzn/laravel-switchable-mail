@@ -61,7 +61,7 @@ class Mailer extends BaseMailer
      *
      * This will prevent errors in daemon queue situations.
      *
-     * @param  \Swift_Mailer
+     * @param  \Swift_Mailer  $swiftMailer
      * @return void
      */
     protected function forceReconnection($swiftMailer = null)
