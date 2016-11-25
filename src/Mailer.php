@@ -47,12 +47,29 @@ class Mailer extends BaseMailer
             $this->events->fire(new MessageSending($message));
         }
 
+        $swift = $this->swiftManager->mailer(MailDriver::forMessage($message));
+
         try {
-            return $this->swiftManager
-                ->mailer(MailDriver::forMessage($message))
-                ->send($message, $this->failedRecipients);
+            return $swift->send($message, $this->failedRecipients);
         } finally {
-            $this->forceReconnection();
+            $this->forceReconnection($swift);
         }
+    }
+
+    /**
+     * Force the transport to re-connect.
+     *
+     * This will prevent errors in daemon queue situations.
+     *
+     * @param  \Swift_Mailer
+     * @return void
+     */
+    protected function forceReconnection($swiftMailer = null)
+    {
+        if (is_null($swiftMailer)) {
+            $swiftMailer = $this->getSwiftMailer();
+        }
+
+        $swiftMailer->getTransport()->stop();
     }
 }
