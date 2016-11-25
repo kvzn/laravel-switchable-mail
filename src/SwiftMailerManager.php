@@ -58,33 +58,58 @@ class SwiftMailerManager extends Manager
      */
     public function mailerForMessage(Swift_Message $message)
     {
-        // $to variable of $message is an array, this implementation is rough and temporary.
-        $to = $message->getTo();
-        $address = array_keys($to)[0];
-
-        $driver = $this->determineMailDriver($address);
-
-        return $this->mailer($driver);
+        return $this->mailer($this->determineMailDriver($message));
     }
 
     /**
-     * Determine mail driver from the service domain of mail-to-address.
+     * Determine mail driver for the given message.
      *
-     * @param  string  $address
+     * @param  \Swift_Message  $message
      * @return string|null
      */
-    protected function determineMailDriver($address)
+    protected function determineMailDriver(Swift_Message $message)
     {
-        $divisionMap = $this->app['config']['switchable-mail'];
+        $recipientsDomains = $this->getMessageRecipientsDomains($message);
 
-        if (is_array($divisionMap) && isset($divisionMap)) {
-            $mailServiceDomain = explode('@', $address)[1];
-            foreach ($divisionMap as $key => $value) {
-                if (in_array($mailServiceDomain, $value)) {
-                    return $key;
-                }
-            }
-        }
+        return key(array_filter(
+            $this->app['config']['switchable-mail'],
+            function ($value) use ($recipientsDomains) {
+                return count(array_intersect($value, $recipientsDomains)) > 0;
+            },
+            ARRAY_FILTER_USE_BOTH
+        ));
+    }
+
+    /**
+     * Get domains for the recipients of message.
+     *
+     * @param  \Swift_Message  $message
+     * @return array
+     */
+    protected function getMessageRecipientsDomains($message)
+    {
+        return array_values(array_unique(array_map(
+            function ($address) {
+                return strtolower(last(explode('@', $address)));
+            },
+            $this->getMessageRecipients($message)
+        )));
+    }
+
+    /**
+     * Get recipients for the given message.
+     *
+     * @param  \Swift_Message  $message
+     * @return array
+     */
+    protected function getMessageRecipients($message)
+    {
+        return array_keys(array_merge(
+            (array) $message->getTo(),
+            (array) $message->getCc(),
+            (array) $message->getBcc(),
+            (array) $message->getReplyTo()
+        ));
     }
 
     /**
