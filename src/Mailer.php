@@ -48,7 +48,8 @@ class Mailer extends BaseMailer
         }
 
         try {
-            return $this->swiftManager->mailerForMessage($message)
+            return $this->swiftManager
+                ->mailerForMessage($message)
                 ->send($message, $this->failedRecipients);
         } finally {
             $this->forceReconnection();
