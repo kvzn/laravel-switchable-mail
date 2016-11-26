@@ -91,9 +91,7 @@ class Mailer extends BaseMailer
      */
     public function setSwiftMailer($swift)
     {
-        if ($driver = $this->swiftManager->getDriverForMailer($swift)) {
-            $this->swiftManager->setDefaultDriver($driver);
-        }
+        $this->swiftManager->setDefaultMailer($swift);
 
         // Our $swift is managed by the SwiftMailerManager singleton,
         // so just let $this->swift go.
