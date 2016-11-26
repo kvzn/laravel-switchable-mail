@@ -78,6 +78,37 @@ class SwiftMailerManager extends Manager
     }
 
     /**
+     * Reset a swift mailer instance.
+     *
+     * @param  string|\Swift_Mailer  $mailer
+     * @return $this
+     */
+    public function resetMailer($mailer)
+    {
+        if ($mailer instanceof Swift_Mailer) {
+            $mailer = $this->getDriverForMailer($mailer);
+        }
+
+        if (is_string($mailer)) {
+            unset($this->drivers[$mailer]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Reset all of the created swift mailer instances.
+     *
+     * @return $this
+     */
+    public function resetMailers()
+    {
+        $this->drivers = [];
+
+        return $this;
+    }
+
+    /**
      * Create a new swift mailer instance.
      *
      * @param  string  $driver
