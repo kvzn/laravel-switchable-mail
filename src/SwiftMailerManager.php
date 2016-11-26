@@ -141,4 +141,23 @@ class SwiftMailerManager extends Manager
 
         return $this;
     }
+
+    /**
+     * Set the default swift mailer.
+     *
+     * @param  string|\Swift_Mailer  $mailer
+     * @return $this
+     */
+    public function setDefaultMailer($mailer)
+    {
+        if ($mailer instanceof Swift_Mailer) {
+            $mailer = $this->getDriverForMailer($mailer);
+        }
+
+        if (is_string($mailer)) {
+            $this->setDefaultDriver($mailer);
+        }
+
+        return $this;
+    }
 }
