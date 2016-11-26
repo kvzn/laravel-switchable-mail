@@ -1,6 +1,6 @@
 # laravel-switchable-mail
 
-It make `Laravel` be able to maintain multiple mail drivers at the same time, and be able to send to different mail addresses with specified mail drivers as configured at runtime automatically.
+It makes `Laravel` be able to maintain multiple mail drivers at the same time, and be able to send to different mail addresses with specified mail drivers as configured at runtime automatically.
 
 ## Instructions
 
@@ -27,7 +27,7 @@ It make `Laravel` be able to maintain multiple mail drivers at the same time, an
 ## Configuration
 
 It uses the `MAIL_DRIVER` configured in `.env` as the default mail driver, for those addresses you want to send to with specified mail drivers, configure it at `switchable-mail.php`. 
-You should install the mail drivers not provided by `Laravel` as the meantime, such as Aliyun `Direct Mail` and `SendCloud`:
+You should install the mail drivers not provided by `Laravel` at the meantime, such as Aliyun `Direct Mail` and `SendCloud`:
 
 	```php
 	// 'directmail' => [
