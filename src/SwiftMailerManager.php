@@ -85,12 +85,8 @@ class SwiftMailerManager extends Manager
      */
     public function resetMailer($mailer)
     {
-        if ($mailer instanceof Swift_Mailer) {
-            $mailer = $this->getDriverForMailer($mailer);
-        }
-
-        if (is_string($mailer)) {
-            unset($this->drivers[$mailer]);
+        if ($driver = $this->validDriverName($mailer)) {
+            unset($this->drivers[$driver]);
         }
 
         return $this;
@@ -106,6 +102,23 @@ class SwiftMailerManager extends Manager
         $this->drivers = [];
 
         return $this;
+    }
+
+    /**
+     * Validate the given driver or mailer, and return the driver name.
+     *
+     * @param  mixed  $driver
+     * @return string|null
+     */
+    protected function validDriverName($driver)
+    {
+        if ($driver instanceof Swift_Mailer) {
+            $driver = $this->getDriverForMailer($driver);
+        }
+
+        if (is_string($driver)) {
+            return $driver;
+        }
     }
 
     /**
@@ -150,12 +163,8 @@ class SwiftMailerManager extends Manager
      */
     public function setDefaultMailer($mailer)
     {
-        if ($mailer instanceof Swift_Mailer) {
-            $mailer = $this->getDriverForMailer($mailer);
-        }
-
-        if (is_string($mailer)) {
-            $this->setDefaultDriver($mailer);
+        if ($driver = $this->validDriverName($mailer)) {
+            $this->setDefaultDriver($driver);
         }
 
         return $this;
