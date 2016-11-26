@@ -15,7 +15,7 @@ class MailDriver
     public static function forMessage(Swift_Message $message)
     {
         if ($multiDrivers = config('switchable-mail', [])) {
-            $recipientsDomains = static::getMessageRecipientsDomains($message);
+            $recipientsDomains = SwiftMessageHelper::getRecipientsDomains($message);
 
             return key(array_filter(
                 $multiDrivers,
@@ -25,37 +25,5 @@ class MailDriver
                 ARRAY_FILTER_USE_BOTH
             ));
         }
-    }
-
-    /**
-     * Get domains for the recipients of message.
-     *
-     * @param  \Swift_Message  $message
-     * @return array
-     */
-    public static function getMessageRecipientsDomains(Swift_Message $message)
-    {
-        return array_values(array_unique(array_map(
-            function ($address) {
-                return strtolower(last(explode('@', $address)));
-            },
-            static::getMessageRecipients($message)
-        )));
-    }
-
-    /**
-     * Get recipients for the given message.
-     *
-     * @param  \Swift_Message  $message
-     * @return array
-     */
-    public static function getMessageRecipients(Swift_Message $message)
-    {
-        return array_keys(array_merge(
-            (array) $message->getTo(),
-            (array) $message->getReplyTo(),
-            (array) $message->getCc(),
-            (array) $message->getBcc()
-        ));
     }
 }
